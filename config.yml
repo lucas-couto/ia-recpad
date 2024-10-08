@@ -1,0 +1,12 @@
+model:
+  type: "cnn"
+  input_shape: [416, 416, 3]
+  num_classes: 3
+
+training:
+  epochs: 10
+  batch_size: 32
+
+paths:
+  train_dir: "datasets/train"
+  valid_dir: "datasets/valid"
