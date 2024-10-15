@@ -1,17 +1,15 @@
 from keras import layers, models
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 0 = INFO, 1 = WARNING, 2 = ERROR
-from keras.src.legacy.preprocessing.image import ImageDataGenerator
+from keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
 
 class Cnn():
-    def __init__(self, config):
+    def __init__(self, config, X_train, y_train, X_val, y_val):
         self.input_shape = tuple(config['model']['input_shape'])
         self.num_classes = config['model']['num_classes']
-        self.train_dir = config['paths']['train_dir']
-        self.valid_dir = config['paths']['valid_dir']
         self.batch_size = config['training']['batch_size']
+        self.epochs = config['training']['epochs']
         self.model = self.build_model()
-        self.train_data, self.validation_data = self.load_data()
+        self.X_train, self.y_train, self.X_val, self.y_val = self.load_data(X_train, y_train, X_val, y_val)
 
     def build_model(self):
         # Definindo a arquitetura da CNN
@@ -46,45 +44,26 @@ class Cnn():
 
         return model
 
-    def load_data(self):
-        # Geradores de imagens com augmentação para o conjunto de treino
-        train_datagen = ImageDataGenerator(rescale=1./255,   # Normalizar as imagens
-                                           shear_range=0.2,  # Aplicar transformações de corte
-                                           zoom_range=0.2,   # Aplicar zoom
-                                           horizontal_flip=True)  # Flip horizontal
+    def load_data(self, X_train, y_train, X_val, y_val):
+        X_train = X_train.astype('float32') / 255.0
+        X_val = X_val.astype('float32') / 255.0
 
-        # Gerador de imagens para o conjunto de validação (sem augmentação)
-        valid_datagen = ImageDataGenerator(rescale=1./255)  # Apenas normalizar as imagens de validação
+        y_train = to_categorical(y_train, self.num_classes)
+        y_val = to_categorical(y_val, self.num_classes)
 
-        # Carregar os dados de treino e validação
-        train_data = train_datagen.flow_from_directory(
-            self.train_dir,
-            target_size=(self.input_shape[0], self.input_shape[1]),  # Redimensionar todas as imagens
-            batch_size=self.batch_size,
-            class_mode='categorical')  # Modo categórico para classificação multiclasse
+        return X_train, y_train, X_val, y_val
 
-        validation_data = valid_datagen.flow_from_directory(
-            self.valid_dir,
-            target_size=(self.input_shape[0], self.input_shape[1]),
-            batch_size=self.batch_size,
-            class_mode='categorical')
-
-        return train_data, validation_data
-
-    def train(self, epochs=10, batch_size=32):
-        # Treinamento do modelo
-        history = self.model.fit(self.train_data, 
-                                 epochs=epochs, 
-                                 batch_size=batch_size,
-                                 validation_data=self.validation_data)
+    def train(self):
+        history = self.model.fit(self.X_train, self.y_train, 
+                                 epochs=self.epochs, 
+                                 batch_size=self.batch_size,
+                                 validation_data=(self.X_val, self.y_val))
         return history
 
     def evaluate(self):
-        # Avaliação no conjunto de validação
-        test_loss, test_acc = self.model.evaluate(self.validation_data)
+        test_loss, test_acc = self.model.evaluate(self.X_val, self.y_val)
         print(f"Validation Accuracy: {test_acc}")
         return test_loss, test_acc
 
     def predict(self, X):
-        # Fazendo previsões
         return self.model.predict(X)
