@@ -3,6 +3,21 @@ import numpy as np
 from skimage.feature import local_binary_pattern, graycomatrix, graycoprops
 
 
+# Função para processar uma única imagem
+def process_single_image(image_path, filter_name):
+    # Carregando a imagem
+    image = cv2.imread(image_path)
+    # Redimensionando a imagem para 416x416 (se necessário)
+    image = cv2.resize(image, (416, 416))
+    # Convertendo para escala de cinza
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # Extraindo características
+    feature_vector = choose_filter(filter_name, gray_image)
+    return feature_vector
+
+
+
 def choose_filter(filterName, image):
   if filterName == "gabor": return gabor_features(image)
   elif filterName == "lbp": return lbp_features(image)

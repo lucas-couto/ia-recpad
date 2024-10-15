@@ -2,7 +2,7 @@ import cv2
 import os
 import numpy as np
 
-from utils.textures import choose_filter
+from utils.textures import process_single_image
 from utils.load_config import load_config
 
 def preprocess_images():
@@ -26,11 +26,8 @@ def load_images_and_extract_features(directory):
           continue
       for file_name in os.listdir(folder_path):
           img_path = os.path.join(folder_path, file_name)
-          img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-          if img is not None:
-              # Extrai as características de textura
-              texture_features = choose_filter(filter, img)
-              features.append(texture_features)
-              labels.append(folder_name)  # Nome da pasta como label
+          texture_features = process_single_image(img_path, filter)
+          features.append(texture_features)
+          labels.append(folder_name)
               
   return np.array(features), np.array(labels)

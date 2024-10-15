@@ -9,6 +9,11 @@ class Cnn():
         self.batch_size = config['training']['batch_size']
         self.epochs = config['training']['epochs']
         self.model = self.build_model()
+
+        self.label_map = {label: idx for idx, label in enumerate(set(y_train))}
+        y_train = [self.label_map[label] for label in y_train]
+        y_val = [self.label_map[label] for label in y_val]
+
         self.X_train, self.y_train, self.X_val, self.y_val = self.load_data(X_train, y_train, X_val, y_val)
 
     def build_model(self):
