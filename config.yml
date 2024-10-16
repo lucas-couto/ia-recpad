@@ -1,13 +1,17 @@
 model:
-  texture: "lbp"
-  type: "cnn"
+  texture: null
+  types: ['cnn', 'random_forest']
   input_shape: [416, 416, 3]
   num_classes: 3
+
+svm:
   kernel: "linear"
   C: 1.0
   gamma: 'scale'
+
+random_forest:
   n_estimators: 100
-  max_depth: None
+  max_depth: null
 
 training:
   epochs: 50

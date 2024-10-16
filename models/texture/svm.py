@@ -1,12 +1,12 @@
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-class Svm():
+class Svm:
     def __init__(self, config, X_train, y_train, X_val, y_val):
-        self.kernel = config['model']['kernel']
-        self.C = config['model']['C']
-        self.gamma = config['model']['gamma']
+        self.kernel = config['svm']['kernel']
+        self.C = config['svm']['C']
+        self.gamma = config['svm']['gamma']
         self.scaler = StandardScaler()  # Normalização dos dados
         self.model = self.build_model()
         self.X_train, self.y_train, self.X_val, self.y_val = self.load_data(X_train, y_train, X_val, y_val)
@@ -29,9 +29,20 @@ class Svm():
     def evaluate(self):
         # Avaliar o modelo no conjunto de validação
         y_pred = self.model.predict(self.X_val)
+
+        # Calcula as métricas
         accuracy = accuracy_score(self.y_val, y_pred)
-        print(f"Acurácia no conjunto de validação: {accuracy * 100:.2f}%")
-        return accuracy
+        precision = precision_score(self.y_val, y_pred, average='weighted')
+        recall = recall_score(self.y_val, y_pred, average='weighted')
+        f1 = f1_score(self.y_val, y_pred, average='weighted')
+
+        # Retorna as métricas em um dicionário
+        return {
+            "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+            "f1_score": f1
+        }
 
     def predict(self, X):
         # Fazer previsões em novos dados
