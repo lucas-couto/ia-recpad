@@ -1,6 +1,6 @@
 model:
   texture: null
-  types: ['cnn', 'random_forest']
+  types: ['cnn']
   input_shape: [416, 416, 3]
   num_classes: 3
 

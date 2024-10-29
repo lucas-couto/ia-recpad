@@ -2,16 +2,15 @@ import cv2
 import numpy as np
 from skimage.feature import local_binary_pattern, graycomatrix, graycoprops
 
-
 def process_single_image(image_path, filter_name):
     image = cv2.imread(image_path)
     image = cv2.resize(image, (416, 416))
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    image = image if filter_name is None else gray_image
     
-    feature_vector = choose_filter(filter_name, gray_image)
+    feature_vector = choose_filter(filter_name, image)
     return feature_vector
-
-
 
 def choose_filter(filterName, image):
   if filterName == "gabor": return gabor_features(image)
@@ -20,6 +19,9 @@ def choose_filter(filterName, image):
   elif filterName == "all": 
     gabor_feature_vector, lbp_feature_vector,  glcm_feature_vector = gabor_features(image), lbp_features(image), glcm_features(image)
     return np.hstack([gabor_feature_vector, lbp_feature_vector, glcm_feature_vector])
+  
+  elif filterName is None:
+    return normal_image(image)
   
   return image
 
@@ -51,3 +53,6 @@ def glcm_features(image):
     contrast = graycoprops(glcm, 'contrast')[0, 0]
     homogeneity = graycoprops(glcm, 'homogeneity')[0, 0]
     return [contrast, homogeneity]
+
+def normal_image(image):
+   return np.array(image).flatten()

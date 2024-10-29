@@ -3,7 +3,7 @@ from keras.utils import to_categorical
 from sklearn.metrics import precision_score, recall_score, f1_score
 import numpy as np
 
-class Cnn:
+class DenseNetwork:
     def __init__(self, config, X_train, y_train, X_val, y_val):
         self.input_shape = tuple(config['model']['input_shape'])
         self.num_classes = config['model']['num_classes']
@@ -12,6 +12,7 @@ class Cnn:
 
         # Definindo n_features com base no tamanho do vetor de características
         self.n_features = X_train.shape[1]  # Assume que X_train é um array 2D (num_samples, n_features)
+        print(self.n_features)
 
         self.model = self.build_model()
 
