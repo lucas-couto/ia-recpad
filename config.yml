@@ -1,6 +1,6 @@
 model:
   texture: null
-  types: ['cnn']
+  types: ['dense_network', 'svm', 'random_forest']
   input_shape: [416, 416, 3]
   num_classes: 3
 

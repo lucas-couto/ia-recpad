@@ -36,7 +36,8 @@ def initialize_model():
     with ThreadPoolExecutor() as executor:
         futures = {
             executor.submit(evaluate_model_wrapper, model_type, config, X_train, y_train, X_val, y_val): model_type for
-            model_type in model_types}
+            model_type in model_types
+        }
 
         for future in futures:
             model_type = futures[future]
